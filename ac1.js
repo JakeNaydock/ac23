@@ -38,15 +38,63 @@ const numberMap = {
     'eight': '8',
     'nine': '9',
 }
-checkNumbers(numberMap);
+//checkNumbers(numberMap);
+let testLine = lineArr[32];
+console.log(testLine);
 
-function checkNumbers(objNumbers, str, re) {
-    for (let num in objNumbers) {
-        console.log(num);
-        console.log(objNumbers[num]);
+function checkNumbers(objNumbers, str, regFor, regBack) {
+    //Find the part one numbers ( string digits)
+    let firstNumber = str.match(regFor)[0];
+    let lastNumber = str.match(regBack)[0];
+    let firstNumIndex = str.indexOf(firstNumber);
+    let lastNumIndex = str.indexOf(lastNumber);
+    console.log('Index of first digit num: ' + firstNumIndex);
+    console.log('Index of last digit num: ' + lastNumIndex);
+    let firstNum = {
+        number: firstNumber,
+        index: firstNumIndex
+    }
+    let lastNum = {
+        number: lastNumber,
+        index: lastNumIndex
     }
 
+    console.log(`BEFORE LOOP - First number:${JSON.stringify(firstNum)}. Last Number: ${JSON.stringify(lastNum)}`);
+    console.log('first num number: ' + firstNum.number);
+    for (let num in objNumbers) {
+        //console.log('In obj numbers loop...');
+        //console.log('Number: ' + num);
+        if (str.includes(num)) {
+            //console.log('Number found: ' + num);
+            let numIndex = str.indexOf(num);
+            //console.log('Index of current found number: ' + numIndex)
+            let currentFirstIndex = firstNum.index;
+            let currentLastIndex = lastNum.index;
+            //console.log('First Index: ' + currentFirstIndex);
+            //console.log('Last Index: ' + currentLastIndex);
+
+            //Don't use NOT operator,in case index of first number is 0
+            if (numIndex < currentFirstIndex) {
+                firstNum.number = num;
+                firstNum.index = numIndex;
+            }
+            if (numIndex > currentLastIndex) {
+                lastNum.number = num;
+                lastNum.index = numIndex;
+            }
+        }
+        return {
+            firstNum: firstNum * 1,
+            lastNum: lastNum * 1
+        }
+
+    }
+    return console.log(`First number:${JSON.stringify(firstNum)}. Last Number: ${JSON.stringify(lastNum)}`)
 }
+
+let re = /\d/;
+let reBack = /\d(?!.*\d)/
+checkNumbers(numberMap, testLine, re, reBack);
 
 
 
