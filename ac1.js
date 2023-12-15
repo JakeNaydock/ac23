@@ -1,32 +1,5 @@
 let fs = require('fs');
 const data = fs.readFileSync('./input1.txt', 'utf-8');
-//console.log(data);
-let lineArr = data.split('\n');
-let arrNums = [];
-for (let i = 0; i < lineArr.length; i++) {
-    let str = lineArr[i];
-    //console.log(str);
-    let re = /\d/;
-    let firstNumber = str.match(re)[0];
-    //console.log(firstNumber);
-
-    let reBack = /\d(?!.*\d)/
-    let lastNumber = str.match(reBack)[0];
-    //console.log(lastNumber);
-    let lineNumber = firstNumber + lastNumber;
-    //console.log(lineNumber);
-    //converts to number0
-    lineNumber = lineNumber * 1;
-    arrNums.push(lineNumber)
-}
-let total = 0;
-arrNums.forEach((num) => {
-    total += num
-});
-
-console.log('Grand total part 1: ' + total); //Part 1 answer: 54953
-
-//start part 2
 const numberMap = {
     'one': '1',
     'two': '2',
@@ -38,18 +11,76 @@ const numberMap = {
     'eight': '8',
     'nine': '9',
 }
-//checkNumbers(numberMap);
-let testLine = lineArr[32];
-console.log(testLine);
+//console.log(data);
+let part1 = 'Part 1';
+let part2 = 'Part 2';
+let lineArr = data.split('\n');
+let re = /\d/;
+let reBack = /\d(?!.*\d)/
+let partOneTotal = 0;
+let partTwoTotal = 0;
+/*
+let testArr = [
+    'two1nine',
+    'eightwothree',
+    'abcone2threexyz',
+    'xtwone3four',
+    '4nineeightseven2',
+    'zoneight234',
+    '7pqrstsixteen'
+];
+*/
+let testArr = ['eighthree'];
 
-function checkNumbers(objNumbers, str, regFor, regBack) {
+for (let i = 0; i < testArr.length; i++) {
+    console.log('Current string: ' + testArr[i]);
+    let lineString = testArr[i];
+    let partOneLineResult = checkNumbers(numberMap, lineString, re, reBack, part1);
+    let partTwoLineResult = checkNumbers(numberMap, lineString, re, reBack, part2);
+    partOneTotal += partOneLineResult;
+    partTwoTotal += partTwoLineResult;
+}
+console.log('Part 1 total: ' + partOneTotal);
+console.log('Part 2 total: ' + partTwoTotal);
+
+/*
+let testStr = 'eightwothree';
+let testNum = 'eight';
+if (testStr.includes(testNum)) {
+    console.log('test string includes testnum')
+} else {
+    console.log('test string does NOT include testnum')
+}
+*/
+/*
+let testLine = 'zoneight234';
+let testLine2 = '7pqrstsixteen'
+console.log(testLine);
+let lineResult = checkNumbers(numberMap, testLine, re, reBack);
+console.log(lineResult);
+let lineResult2 = checkNumbers(numberMap, testLine2, re, reBack);
+console.log(lineResult2);
+let testSum = lineResult + lineResult2;
+console.log(testSum);
+*/
+
+
+//start part 2
+
+//checkNumbers(numberMap);
+
+function checkNumbers(objNumbers, str, regFor, regBack, part) {
     //Find the part one numbers ( string digits)
-    let firstNumber = str.match(regFor)[0];
-    let lastNumber = str.match(regBack)[0];
-    let firstNumIndex = str.indexOf(firstNumber);
-    let lastNumIndex = str.indexOf(lastNumber);
-    console.log('Index of first digit num: ' + firstNumIndex);
-    console.log('Index of last digit num: ' + lastNumIndex);
+    console.log('str regFor: ' + str.match(regFor));
+    let firstNumMatch = str.match(regFor);
+    let firstNumber = (firstNumMatch) ? firstNumMatch[0] : null;
+    let lastNumMatch = str.match(regBack);
+    let lastNumber = (lastNumMatch) ? lastNumMatch[0] : null;
+    let firstNumIndex = (firstNumMatch) ? str.indexOf(firstNumber) : null;
+    let lastNumIndex = (lastNumMatch) ? str.indexOf(lastNumber) : null;
+    //console.log('Index of first digit num: ' + firstNumIndex);
+    //console.log('Index of last digit num: ' + lastNumIndex);
+    //build initial object with part 1 number
     let firstNum = {
         number: firstNumber,
         index: firstNumIndex
@@ -59,8 +90,14 @@ function checkNumbers(objNumbers, str, regFor, regBack) {
         index: lastNumIndex
     }
 
+    //Return here if user is doing part 1
+    if (part === 'Part 1') {
+        let lineNumber = firstNum.number + lastNum.number
+        return lineNumber * 1;
+    }
+
     console.log(`BEFORE LOOP - First number:${JSON.stringify(firstNum)}. Last Number: ${JSON.stringify(lastNum)}`);
-    console.log('first num number: ' + firstNum.number);
+    //console.log('first num number: ' + firstNum.number);
     for (let num in objNumbers) {
         //console.log('In obj numbers loop...');
         //console.log('Number: ' + num);
@@ -74,27 +111,24 @@ function checkNumbers(objNumbers, str, regFor, regBack) {
             //console.log('Last Index: ' + currentLastIndex);
 
             //Don't use NOT operator,in case index of first number is 0
-            if (numIndex < currentFirstIndex) {
-                firstNum.number = num;
+            if (currentFirstIndex === null || numIndex < currentFirstIndex) {
+                firstNum.number = objNumbers[num];
                 firstNum.index = numIndex;
             }
-            if (numIndex > currentLastIndex) {
-                lastNum.number = num;
+            if (currentLastIndex === null || numIndex > currentLastIndex) {
+                lastNum.number = objNumbers[num];
                 lastNum.index = numIndex;
             }
         }
-        return {
-            firstNum: firstNum * 1,
-            lastNum: lastNum * 1
-        }
-
     }
-    return console.log(`First number:${JSON.stringify(firstNum)}. Last Number: ${JSON.stringify(lastNum)}`)
+    console.log(`String: ${str}. First Num: ${firstNum.number}. Last Num: ${lastNum.number}`);
+    let lineNumber = firstNum.number + lastNum.number;
+    //console.log('Line number (string): ' + lineNumber)
+    return lineNumber * 1;
 }
 
-let re = /\d/;
-let reBack = /\d(?!.*\d)/
-checkNumbers(numberMap, testLine, re, reBack);
+
+
 
 
 
