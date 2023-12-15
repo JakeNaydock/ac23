@@ -30,11 +30,12 @@ let testArr = [
     '7pqrstsixteen'
 ];
 */
-let testArr = ['eighthree'];
+//'1atwoneighta1'
+let testArr = ['1atwoneighta1'];
 
-for (let i = 0; i < testArr.length; i++) {
-    console.log('Current string: ' + testArr[i]);
-    let lineString = testArr[i];
+for (let i = 0; i < lineArr.length; i++) {
+    console.log('Current string: ' + lineArr[i]);
+    let lineString = lineArr[i];
     let partOneLineResult = checkNumbers(numberMap, lineString, re, reBack, part1);
     let partTwoLineResult = checkNumbers(numberMap, lineString, re, reBack, part2);
     partOneTotal += partOneLineResult;
@@ -75,11 +76,13 @@ function checkNumbers(objNumbers, str, regFor, regBack, part) {
     let firstNumMatch = str.match(regFor);
     let firstNumber = (firstNumMatch) ? firstNumMatch[0] : null;
     let lastNumMatch = str.match(regBack);
+    //let lastNumMatch = regBack.exec(str);
     let lastNumber = (lastNumMatch) ? lastNumMatch[0] : null;
+    console.log(`First number p1: ${firstNumber} .Last number p1: ${lastNumber}`)
     let firstNumIndex = (firstNumMatch) ? str.indexOf(firstNumber) : null;
-    let lastNumIndex = (lastNumMatch) ? str.indexOf(lastNumber) : null;
-    //console.log('Index of first digit num: ' + firstNumIndex);
-    //console.log('Index of last digit num: ' + lastNumIndex);
+    let lastNumIndex = (lastNumMatch) ? str.lastIndexOf(lastNumber) : null;
+    console.log('Index of first digit num: ' + firstNumIndex);
+    console.log('Index of last digit num: ' + lastNumIndex);
     //build initial object with part 1 number
     let firstNum = {
         number: firstNumber,
@@ -103,7 +106,8 @@ function checkNumbers(objNumbers, str, regFor, regBack, part) {
         //console.log('Number: ' + num);
         if (str.includes(num)) {
             //console.log('Number found: ' + num);
-            let numIndex = str.indexOf(num);
+            let lineFirstNumIndex = str.indexOf(num);
+            let lineLastNumIndex = str.lastIndexOf(num);
             //console.log('Index of current found number: ' + numIndex)
             let currentFirstIndex = firstNum.index;
             let currentLastIndex = lastNum.index;
@@ -111,13 +115,13 @@ function checkNumbers(objNumbers, str, regFor, regBack, part) {
             //console.log('Last Index: ' + currentLastIndex);
 
             //Don't use NOT operator,in case index of first number is 0
-            if (currentFirstIndex === null || numIndex < currentFirstIndex) {
+            if (currentFirstIndex === null || currentFirstIndex === -1 || lineFirstNumIndex < currentFirstIndex) {
                 firstNum.number = objNumbers[num];
-                firstNum.index = numIndex;
+                firstNum.index = lineFirstNumIndex;
             }
-            if (currentLastIndex === null || numIndex > currentLastIndex) {
+            if (currentLastIndex === null || currentLastIndex === -1 || lineLastNumIndex > currentLastIndex) {
                 lastNum.number = objNumbers[num];
-                lastNum.index = numIndex;
+                lastNum.index = lineLastNumIndex;
             }
         }
     }
