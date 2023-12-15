@@ -15,16 +15,15 @@ const numberMap = {
 const part1 = 'Part 1';
 const part2 = 'Part 2';
 const lineArr = data.split('\n');
-const re = /\d/;
+const reg = /\d/;
 const reBack = /\d(?!.*\d)/
 let partOneTotal = 0;
 let partTwoTotal = 0;
 
 for (let i = 0; i < lineArr.length; i++) {
-    console.log('Current string: ' + lineArr[i]);
     let lineString = lineArr[i];
-    let partOneLineResult = checkNumbers(numberMap, lineString, re, reBack, part1);
-    let partTwoLineResult = checkNumbers(numberMap, lineString, re, reBack, part2);
+    let partOneLineResult = checkNumbers(numberMap, lineString, reg, reBack, part1);
+    let partTwoLineResult = checkNumbers(numberMap, lineString, reg, reBack, part2);
     partOneTotal += partOneLineResult;
     partTwoTotal += partTwoLineResult;
 }
@@ -33,16 +32,14 @@ console.log('Part 2 total: ' + partTwoTotal);
 
 function checkNumbers(objNumbers, str, regFor, regBack, part) {
 
-    console.log('str regFor: ' + str.match(regFor));
     let firstNumMatch = str.match(regFor);
     let firstNumber = (firstNumMatch) ? firstNumMatch[0] : null;
+
     let lastNumMatch = str.match(regBack);
     let lastNumber = (lastNumMatch) ? lastNumMatch[0] : null;
-    console.log(`First number p1: ${firstNumber} .Last number p1: ${lastNumber}`)
+
     let firstNumIndex = (firstNumMatch) ? str.indexOf(firstNumber) : null;
     let lastNumIndex = (lastNumMatch) ? str.lastIndexOf(lastNumber) : null;
-    console.log('Index of first digit num: ' + firstNumIndex);
-    console.log('Index of last digit num: ' + lastNumIndex);
 
     let firstNum = {
         number: firstNumber,
@@ -80,9 +77,3 @@ function checkNumbers(objNumbers, str, regFor, regBack, part) {
     let lineNumber = firstNum.number + lastNum.number;
     return lineNumber * 1;
 }
-
-
-
-
-
-
