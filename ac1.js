@@ -22,15 +22,15 @@ let partTwoTotal = 0;
 
 for (let i = 0; i < lineArr.length; i++) {
     let lineString = lineArr[i];
-    let partOneLineResult = checkNumbers(numberMap, lineString, reg, reBack, part1);
-    let partTwoLineResult = checkNumbers(numberMap, lineString, reg, reBack, part2);
+    let partOneLineResult = getLineResult(numberMap, lineString, reg, reBack, part1);
+    let partTwoLineResult = getLineResult(numberMap, lineString, reg, reBack, part2);
     partOneTotal += partOneLineResult;
     partTwoTotal += partTwoLineResult;
 }
 console.log('Part 1 total: ' + partOneTotal);
 console.log('Part 2 total: ' + partTwoTotal);
 
-function checkNumbers(objNumbers, str, regFor, regBack, part) {
+function getLineResult(objNumbers, str, regFor, regBack, part) {
 
     let firstNumMatch = str.match(regFor);
     let firstNumber = (firstNumMatch) ? firstNumMatch[0] : null;
