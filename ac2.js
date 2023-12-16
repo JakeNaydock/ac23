@@ -35,20 +35,37 @@ let testArr = [
     ' 11 green, 2 red, 13 blue'
 ];
 
-console.log(gameNum);
+const re = /\d/;
+let testSegment = firstGame.split(';');
+console.log(testSegment);
+game = testSegment;
+console.log(game);
+let gameEnd = game.match('Game').index + 5;
+let gameNumArr = Array.from(game.substring(gameEnd, gameEnd + 3));
+let gameNum = '';
+gameNumArr.forEach((el) => { if (el.match(re)) game += el });
+gameArr.push({
+    id: gameNum * 1
+});
+
+
+console.log(gameArr)
+
+/*
 for (let i = 0; i < games.length; i++) {
     let game = games[i];
+    const re = /\d/;
     //console.log(match);
-    let gameEnd = gameNum.match('Game').index + 5;
-    let gameNumArr = Array.from(testStr.substring(gameEnd, gameEnd + 3));
+    let gameEnd = game.match('Game').index + 5;
+    let gameNumArr = Array.from(game.substring(gameEnd, gameEnd + 3));
     let gameNum = '';
-    gameNumArr.forEach((el) => { if (el.match(re)) { game += el } });
+    gameNumArr.forEach((el) => { if (el.match(re)) game += el });
     gameArr.push({
         id: gameNum * 1
     });
 }
+*/
 
-console.log(gameArr)
 
 
 
