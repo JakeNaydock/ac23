@@ -6,25 +6,17 @@ What is the sum of the IDs of those games?
 const fs = require('fs');
 const { default: test } = require('node:test');
 const data = fs.readFileSync('./input2.txt', 'utf-8');
+const redThreshold = 12;
+const greenThreshold = 13;
+const blueThreshold = 14;
 const games = data.split('\n');
-let firstGame = games[0];
-console.log(firstGame);
 
+/*
 const segments = [];
 games.forEach((game) => {
     segments.push(game.split(';'));
 });
-//console.log(segments);
-/*
-let gameObj = {
-    id: null,
-    tries: [
-        ' 3 blue, 11 red, 6 green',
-        ' 4 red, 1 green'
-    ]
-}
 */
-
 let gameArr = [];
 
 let colors = {
@@ -32,8 +24,10 @@ let colors = {
     green: ' green',
     blue: ' blue'
 }
-
-console.log('color map red ' + colors.red);
+const isNumber = (str) => {
+    arg = parseInt(str);
+    return (!Number.isNaN(arg) && typeof (arg) === 'number') ? true : false;
+}
 
 let testArr = [
     'Game 100: 2 green, 9 red',
@@ -43,53 +37,68 @@ let testArr = [
     ' 11 green, 2 red, 13 blue'
 ];
 
-const re = /\d/;
-let testSegment = firstGame.split(';');
-console.log(testSegment);
-let game = testSegment[0];
-console.log(game);
-
-console.log(game.match(colors.red));
-let redIndex = game.match(colors.red).index;
-console.log('Red index: ' + redIndex);
-let twoBeforeColor = Array.from(game.substring(redIndex - 2, redIndex));
-console.log('Two before color: ' + twoBeforeColor);
-
-//console.log(typeof (parseInt(twoBeforeColor[1])));
-
-const isNumber = (arg) => {
-    arg = parseInt(arg);
-    (!Number.isNaN(arg) && typeof (arg) === 'number') ? true : false;
+let testGameObj = {
+    id: 1,
+    red: true,
+    blue: true,
+    green: true
 }
-console.log(parseInt(twoBeforeColor[0]));
-console.log(typeof parseInt(' '));
-console.log(isNumber(' '));
 
-/*s
-let gameEnd = game.match('Game').index + 5;
-let gameNumArr = Array.from(game.substring(gameEnd, gameEnd + 3));
-let gameNum = '';
-gameNumArr.forEach((el) => { if (el.match(re)) gameNum += el });
-gameArr.push({
-    id: gameNum * 1
-});
-
-
-console.log(gameArr)
-*/
-
+function evalColor(segment, color, threshold, gameIndex) {
+    if (!segment.match(colors[color])) return console.log('No Match on color: ' + color);
+    let index = segment.match(colors[color]).index;
+    let twoBeforeColor = Array.from(segment.substring(index - 2, index));
+    let colorStr = '';
+    twoBeforeColor.forEach((char) => { if (isNumber(char)) colorStr += char });
+    let colorTotal = parseInt(colorStr);
+    //If the color # on this line is greater than the threshold for that color
+    if (colorTotal > threshold) {
+        gameArr[gameIndex][color] = false
+    };
+}
 /*
+let firstGame = games[28];
+let firstSplit = firstGame.split(';');
+let testSegment = firstSplit[0];
+evalColor(testSegment, 'red', redThreshold);
+
+console.log(testSegment);
+console.log(testGameObj);
+*/
+//looping through games
+
+
 for (let i = 0; i < games.length; i++) {
     let game = games[i];
-    const re = /\d/;
     //console.log(match);
     let gameEnd = game.match('Game').index + 5;
     let gameNumArr = Array.from(game.substring(gameEnd, gameEnd + 3));
     let gameNum = '';
-    gameNumArr.forEach((el) => { if (el.match(re)) gameNum += el });
+    gameNumArr.forEach((el) => { if (isNumber(el)) gameNum += el });
+    let gameId = gameNum * 1;
     gameArr.push({
-        id: gameNum * 1
+        id: gameId,
+        red: true,
+        blue: true,
+        green: true
+    });
+
+    let segments = game.split(';');
+    segments.forEach((segment) => {
+
+        evalColor(segment, 'red', redThreshold, i);
+        evalColor(segment, 'green', greenThreshold, i);
+        evalColor(segment, 'blue', blueThreshold, i);
     });
 }
 console.log(gameArr);
-*/
+
+let sum = 0;
+for (const gameIndex in gameArr) {
+    const game = gameArr[gameIndex];
+    if (game.red === true && game.green === true && game.blue === true) {
+        sum += game.id;
+    }
+}
+
+console.log('sum:' + sum);
