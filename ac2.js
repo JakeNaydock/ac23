@@ -16,20 +16,23 @@ function isNumber(str) {
     return (!Number.isNaN(arg) && typeof (arg) === 'number') ? true : false;
 }
 
-function evalColor(segment, color, threshold, gameIndex) {
+function evalColor(segment, color, gameIndex) {
     if (!segment.match(colors[color])) return;
     const index = segment.match(colors[color]).index;
     const twoBeforeColor = Array.from(segment.substring(index - 2, index));
     let colorStr = '';
     twoBeforeColor.forEach((char) => { if (isNumber(char)) colorStr += char });
     const colorTotal = parseInt(colorStr);
-    //If the color # on this line is greater than the threshold for that color
-    if (colorTotal > threshold) {
-        gameArr[gameIndex][color] = false
+    //Get the current highest color total for this obj
+    let currentTotal = gameArr[gameIndex][color];
+    //If color total for this segment is greater than current highest, replace it
+    if (colorTotal > currentTotal) {
+        gameArr[gameIndex][color] = colorTotal;
     };
 }
 
-let sum = 0;
+let p1sum = 0;
+let p2sum = 0;
 for (let i = 0; i < games.length; i++) {
     const game = games[i];
     const gameEnd = game.match('Game').index + 5;
@@ -37,22 +40,28 @@ for (let i = 0; i < games.length; i++) {
     let gameNum = '';
     gameNumArr.forEach((el) => { if (isNumber(el)) gameNum += el });
     let gameId = gameNum * 1;
+    //Create an object per game id. Will store the highest # of colors seen in a game.
     gameArr.push({
         id: gameId,
-        red: true,
-        blue: true,
-        green: true
+        red: 0,
+        blue: 0,
+        green: 0
     });
+    //Splitting into segments ensure colors are unique
     const segments = game.split(';');
+    //Update the obj for this ID with the highest counts per color
     segments.forEach((segment) => {
-        evalColor(segment, 'red', redThreshold, i);
-        evalColor(segment, 'green', greenThreshold, i);
-        evalColor(segment, 'blue', blueThreshold, i);
+        evalColor(segment, 'red', i);
+        evalColor(segment, 'green', i);
+        evalColor(segment, 'blue', i);
     });
-    if (gameArr[i].red === true && gameArr[i].green === true && gameArr[i].blue === true) {
-        sum += gameArr[i].id;
+    //part 1 answer
+    if (gameArr[i].red <= redThreshold && gameArr[i].green <= greenThreshold && gameArr[i].blue <= blueThreshold) {
+        p1sum += gameArr[i].id;
     }
+    //part 2 answer
+    p2sum += gameArr[i].red * gameArr[i].green * gameArr[i].blue;
 }
 
-//console.log(gameArr);
-console.log('Sum of game IDs: ' + sum);
+console.log('Part 1 sum: ' + p1sum);
+console.log('Part 2 sum: ' + p2sum);
