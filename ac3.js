@@ -9,7 +9,7 @@ What is the sum of all of the part numbers in the engine schematic?
 
 const fs = require('fs');
 const { default: test } = require('node:test');
-const data = fs.readFileSync('./input3.txt', 'utf-8');
+const data = fs.readFileSync('./i3test.txt', 'utf-8');
 
 const isNumber = (arg) => arg.match(/\d/g) ? true : false;
 const isPeriod = (arg) => arg.match(/\./g) ? true : false;
@@ -21,55 +21,45 @@ function uniqueFilter(value, index, array) {
     return array.indexOf(value) === index;
 }
 let symbols = [];
+//list of special characters
+for (let x of data) {
+    for (let y of x) {
+        if (isNaN(y) && y != "." && !symbols.includes(y)) {
+            symbols.push(y);
+        }
+    }
+}
+console.log('Symbols: ' + symbols);
 
+//Symbols are: * % $ @ & + /
 let lines = data.split('\n');
 let testLine = lines[2];
 console.log(testLine);
+//Captures numbers, and indexes of those numbers per line
 const numMatches = testLine.matchAll(/\d{1,}/g);
+const symbolMatches = testLine.matchAll(/^(\d).*$/g);
+console.log(JSON.stringify(numMatches.match));
+
 for (const match of numMatches) {
-    //console.log(`Number matched: ${match[0]}. Index: ${match.index}`);
-    arrNumIndex.push(match.index);
+    console.log(`symbol matched: ${match[0]}. Index: ${match.index}`);
+    arrSymIndex.push(match.index);
 }
-console.log(arrNumIndex);
+//console.log(arrNumIndex);
+
+
+
+
 for (let line = 0; line < lines.length; line++) {
-    let arrLine = Array.from(lines[line]);
-    arrLine.forEach((char, i) => {
-        if (!isNumber(char) && !isPeriod(char)) symbols.push(lines[line])
-    });
+    //let curLine = Array.from(lines[line]);
+    //let nextLine = Array.from(lines[line + 1]);
 
-}
-let uniquesymbols = symbols.filter(uniqueFilter);
-console.log('Unique symbols: ' + uniquesymbols);
-
-
-/*
-let arrLine = Array.from(testLine);
-console.log(arrLine);
-console.log('Arrline length ' + arrLine.length);
-console.log('Line length: ' + testLine.length);
-console.log(isNumber('.'));
-let testLineEl = arrLine[7];
-console.log(testLineEl);
-console.log('Is period? ' + isPeriod(testLineEl));
-console.log('Is number? ' + isNumber(testLineEl));
-console.log('Is symbol? ' + isSymbol(testLineEl));
- 
-*/
-
-
-
-let sum = 0;
-
-/*
-for (let line = 1; line < lines.length; line++) {
-    let curLine = Array.from(lines[line]);
-    let nextLine = Array.from(lines[line + 1]);
-
-    curLine.forEach((char, i) => {
+    for (var i = 0; i < lines[line].length; i++) {
+        let char = lines[line][i];
         if (isNumber(char)) arrNumIndex.push(i);
         if (isSymbol(char)) arrSymIndex.push(i);
-    })
+    }
 
-    console.log(arrLine)
 }
-*/
+
+
+
