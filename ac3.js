@@ -11,12 +11,21 @@ const fs = require('fs');
 const { default: test } = require('node:test');
 const data = fs.readFileSync('./i3test.txt', 'utf-8');
 
-const isNumber = (arg) => arg.match(/\d/g) ? true : false;
-const isPeriod = (arg) => arg.match(/\./g) ? true : false;
-const isSymbol = (arg) => !isNumber(arg) && !isPeriod(arg) ? true : false;
+const isNumber = (arg) => {
+    if (!arg) return console.log(`${arg} is not a number and cannot be parsed`);
+    return arg.match(/\d/g) ? true : false;
+};
 
-let arrNumIndex = [];
-let arrSymIndex = [];
+const isPeriod = (arg) => {
+    if (!arg) return false;
+    return arg.match(/\./g) ? true : false;
+};
+const isSymbol = (arg) => {
+    if (!arg) return false;
+    return !isNumber(arg) && !isPeriod(arg) ? true : false;
+};
+
+
 function uniqueFilter(value, index, array) {
     return array.indexOf(value) === index;
 }
@@ -39,27 +48,67 @@ console.log(testLine);
 const numMatches = testLine.matchAll(/\d{1,}/g);
 const symbolMatches = testLine.matchAll(/^(\d).*$/g);
 console.log(JSON.stringify(numMatches.match));
-
+/*
 for (const match of numMatches) {
     console.log(`symbol matched: ${match[0]}. Index: ${match.index}`);
     arrSymIndex.push(match.index);
 }
 //console.log(arrNumIndex);
-
-
-
+*/
+let partNumbers = [];
 
 for (let line = 0; line < lines.length; line++) {
     //let curLine = Array.from(lines[line]);
     //let nextLine = Array.from(lines[line + 1]);
+    //const numMatches = [...lines[line].matchAll(/\d{1,}/g)];
+    //console.log(`Num matches for line ${line}: ${numMatches[0]}`);
+    let curLine = lines[line];
 
-    for (var i = 0; i < lines[line].length; i++) {
-        let char = lines[line][i];
-        if (isNumber(char)) arrNumIndex.push(i);
-        if (isSymbol(char)) arrSymIndex.push(i);
+    for (let i = 0; i < curLine.length; i++) {
+        console.log(`Line lines.length ${curLine.length}`);
+        let currentChar = lines[line][i];
+        if (line === lines.length - 1) break;
+        let nextLineChar = lines[line + 1][i];
+        let nextDiagLeft = lines[line + 1][i - 1];
+        let nextDiagRight = lines[line + 1][i + 1];
+
+        console.log(`Current char line ${line} index ${i}: ${currentChar}. Is num cur char? ${isNumber(currentChar)}`);
+        //console.log(typeof (currentChar));
+        //console.log(`Is num cur char? ${isNumber(currentChar)}`);
+        console.log(`Next line char: ${nextLineChar}`);
+        console.log(`Next line diag left: ${nextDiagLeft}`);
+        console.log(`Next line diag right ${nextDiagRight}`);
+        let previousChar = (i === 0) ? null : (lines[line][i - 1]);
+        let nextChar = (i === lines[line].length - 1) ? null : (lines[line][i + 1]);
+        if (isNumber(currentChar) && (isSymbol(nextLineChar)) || isSymbol(nextDiagLeft) || isSymbol(nextDiagRight)) {
+            let partCache = '';
+            if (isNumber(previousChar)) {
+                partCache += previousChar;
+            }
+            if (isNumber(currentChar)) {
+                partCache += currentChar
+            }
+
+            if (isNumber(nextChar)) {
+                partCache += nextChar
+            }
+
+            let mostRecentNum = partNumbers.slice(-1)[0];
+
+            if (partCache != mostRecentNum) {
+                partNumbers.push(partCache);
+            }
+        }
     }
-
 }
 
+console.log(partNumbers);
+
+let testVar = lines[0];
+/*
+for (let j = 0; j < testVar.length; j++) {
+    console.log(testVar[j])
+}
+*/
 
 
