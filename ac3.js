@@ -57,48 +57,71 @@ for (const match of numMatches) {
 */
 let partNumbers = [];
 
-for (let line = 0; line < lines.length; line++) {
+for (let line = 0; line < 1/*lines.length*/; line++) {
     //let curLine = Array.from(lines[line]);
     //let nextLine = Array.from(lines[line + 1]);
     //const numMatches = [...lines[line].matchAll(/\d{1,}/g)];
     //console.log(`Num matches for line ${line}: ${numMatches[0]}`);
     let curLine = lines[line];
 
+
+    let partCache = '';
     for (let i = 0; i < curLine.length; i++) {
-        console.log(`Line lines.length ${curLine.length}`);
+        //console.log(`Line lines.length ${curLine.length}`);
         let currentChar = lines[line][i];
         if (line === lines.length - 1) break;
         let nextLineChar = lines[line + 1][i];
         let nextDiagLeft = lines[line + 1][i - 1];
         let nextDiagRight = lines[line + 1][i + 1];
 
-        console.log(`Current char line ${line} index ${i}: ${currentChar}. Is num cur char? ${isNumber(currentChar)}`);
+        console.log(`Current char line ${line} index ${i}: ${currentChar}. NOT is num cur char? ${!isNumber(currentChar)}`);
+
         //console.log(typeof (currentChar));
         //console.log(`Is num cur char? ${isNumber(currentChar)}`);
-        console.log(`Next line char: ${nextLineChar}`);
-        console.log(`Next line diag left: ${nextDiagLeft}`);
-        console.log(`Next line diag right ${nextDiagRight}`);
+        //console.log(`Next line char: ${nextLineChar}`);
+        //console.log(`Next line diag left: ${nextDiagLeft}`);
+        //console.log(`Next line diag right ${nextDiagRight}`);
         let previousChar = (i === 0) ? null : (lines[line][i - 1]);
+        let twoBack = (i < 2) ? null : lines[line][i - 1];
         let nextChar = (i === lines[line].length - 1) ? null : (lines[line][i + 1]);
-        if (isNumber(currentChar) && (isSymbol(nextLineChar)) || isSymbol(nextDiagLeft) || isSymbol(nextDiagRight)) {
-            let partCache = '';
-            if (isNumber(previousChar)) {
-                partCache += previousChar;
-            }
-            if (isNumber(currentChar)) {
-                partCache += currentChar
-            }
 
-            if (isNumber(nextChar)) {
-                partCache += nextChar
-            }
+        //console.log('Part cache: ' + partCache);
 
-            let mostRecentNum = partNumbers.slice(-1)[0];
+        //New approach: keep adding the number to the cache if it meets the condition.
+        //If a char does NOT meet the condition, push the current cache into the numbers list
+        if (isNumber(currentChar) && (isSymbol(nextLineChar) || isSymbol(nextDiagLeft) || isSymbol(nextDiagRight))) {
+            console.log(`Adding ${currentChar} from index ${i} to part cache. Is number? ${isNumber(currentChar)}`);
+            //If the previous character is a number not adjacent to a symbol, tack that on first
+            partCache += (!partCache && isNumber(previousChar)) ? previousChar + currentChar : currentChar;
 
-            if (partCache != mostRecentNum) {
-                partNumbers.push(partCache);
-            }
+            console.log('Previous char is number? ' + isNumber(previousChar));
+            /*
+            if (!partCache && isNumber(previousChar)) {
+                //Check back YET ANOTHER character (if it's 3 digits and only one on end matches)
+                console.log('Two back: ' + twoBack);
+                console.log('Two back is num?: ' + isNumber(twoBack));
+                //partCache += (isNumber(twoBack)) ? twoBack + previousChar + currentChar : previousChar + currentChar;
+                console.log
+                if (isNumber(twoBack)) {
+                    partCache += twoBack + previousChar + currentChar;
+                } else {
+                    partCache += previousChar + currentChar
+                }
+            }*/
+            console.log(`PART CACHE AFTER ADDING ${partCache}`);
+
+
+            //If num adjacent to a symbol but cache has stuff in it, tack the number on
+        } else if (partCache && isNumber(currentChar)) {
+            partCache += currentChar;
+
+        } else if (!isNumber(currentChar) && partCache != '') {
+            //Push what's currently in the cache into the numbers array - then clear the current cache.
+            console.log(`Pushing part cache: ${partCache}`)
+            partNumbers.push(partCache);
+            partCache = '';
         }
+
     }
 }
 
