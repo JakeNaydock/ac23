@@ -9,7 +9,7 @@ What is the sum of all of the part numbers in the engine schematic?
 
 const fs = require('fs');
 const { default: test } = require('node:test');
-const data = fs.readFileSync('./i3test.txt', 'utf-8');
+const data = fs.readFileSync('i3test.txt', 'utf-8');
 
 const isNumber = (arg) => {
     if (!arg) return console.log(`${arg} is not a number and cannot be parsed`);
@@ -26,53 +26,27 @@ const isSymbol = (arg) => {
 };
 
 
-function uniqueFilter(value, index, array) {
-    return array.indexOf(value) === index;
-}
-let symbols = [];
-//list of special characters
-for (let x of data) {
-    for (let y of x) {
-        if (isNaN(y) && y != "." && !symbols.includes(y)) {
-            symbols.push(y);
-        }
-    }
-}
-console.log('Symbols: ' + symbols);
-
 //Symbols are: * % $ @ & + /
 let lines = data.split('\n');
-let testLine = lines[2];
-console.log(testLine);
-//Captures numbers, and indexes of those numbers per line
-const numMatches = testLine.matchAll(/\d{1,}/g);
-const symbolMatches = testLine.matchAll(/^(\d).*$/g);
-console.log(JSON.stringify(numMatches.match));
-/*
-for (const match of numMatches) {
-    console.log(`symbol matched: ${match[0]}. Index: ${match.index}`);
-    arrSymIndex.push(match.index);
-}
-//console.log(arrNumIndex);
-*/
+
 let partNumbers = [];
+let sum = 0;
 
-for (let line = 0; line < 1/*lines.length*/; line++) {
-    //let curLine = Array.from(lines[line]);
-    //let nextLine = Array.from(lines[line + 1]);
-    //const numMatches = [...lines[line].matchAll(/\d{1,}/g)];
-    //console.log(`Num matches for line ${line}: ${numMatches[0]}`);
+for (let line = 0; line < lines.length; line++) {
     let curLine = lines[line];
-
-
     let partCache = '';
     for (let i = 0; i < curLine.length; i++) {
-        //console.log(`Line lines.length ${curLine.length}`);
         let currentChar = lines[line][i];
-        if (line === lines.length - 1) break;
-        let nextLineChar = lines[line + 1][i];
-        let nextDiagLeft = lines[line + 1][i - 1];
-        let nextDiagRight = lines[line + 1][i + 1];
+        //if (line === lines.length - 1) break;
+        let twoBack = (i < 2) ? null : lines[line][i - 2];
+        let previousChar = (i === 0) ? null : (lines[line][i - 1]);
+        let nextChar = (i === lines[line].length - 1) ? null : (lines[line][i + 1]);
+        let lastLineChar = (line === 0) ? null : lines[line - 1][i];
+        let nextLineChar = (line === lines.length - 1) ? null : lines[line + 1][i];
+        let lastDiagLeft = (line === 0) ? null : lines[line - 1][i - 1];
+        let lastDiagRight = (line === 0) ? null : lines[line - 1][i + 1];
+        let nextDiagLeft = (line === lines.length - 1) ? null : lines[line + 1][i - 1];
+        let nextDiagRight = (line === lines.length - 1) ? null : lines[line + 1][i + 1];
 
         console.log(`Current char line ${line} index ${i}: ${currentChar}. NOT is num cur char? ${!isNumber(currentChar)}`);
 
@@ -81,57 +55,52 @@ for (let line = 0; line < 1/*lines.length*/; line++) {
         //console.log(`Next line char: ${nextLineChar}`);
         //console.log(`Next line diag left: ${nextDiagLeft}`);
         //console.log(`Next line diag right ${nextDiagRight}`);
-        let previousChar = (i === 0) ? null : (lines[line][i - 1]);
-        let twoBack = (i < 2) ? null : lines[line][i - 1];
-        let nextChar = (i === lines[line].length - 1) ? null : (lines[line][i + 1]);
-
         //console.log('Part cache: ' + partCache);
-
         //New approach: keep adding the number to the cache if it meets the condition.
         //If a char does NOT meet the condition, push the current cache into the numbers list
-        if (isNumber(currentChar) && (isSymbol(nextLineChar) || isSymbol(nextDiagLeft) || isSymbol(nextDiagRight))) {
+        if (isNumber(currentChar) && (isSymbol(previousChar) || isSymbol(nextChar) || isSymbol(lastLineChar) || isSymbol(nextLineChar) ||
+            isSymbol(lastDiagLeft) || isSymbol(lastDiagRight) || isSymbol(nextDiagLeft) || isSymbol(nextDiagRight))) {
             console.log(`Adding ${currentChar} from index ${i} to part cache. Is number? ${isNumber(currentChar)}`);
-            //If the previous character is a number not adjacent to a symbol, tack that on first
-            partCache += (!partCache && isNumber(previousChar)) ? previousChar + currentChar : currentChar;
+            //console.log('Previous char is number? ' + isNumber(previousChar));
 
-            console.log('Previous char is number? ' + isNumber(previousChar));
-            /*
-            if (!partCache && isNumber(previousChar)) {
+            //If we have no parts in the cache currently, check if there are more digits before to add on (not attached to symbol)
+            if (!partCache) {
                 //Check back YET ANOTHER character (if it's 3 digits and only one on end matches)
-                console.log('Two back: ' + twoBack);
-                console.log('Two back is num?: ' + isNumber(twoBack));
-                //partCache += (isNumber(twoBack)) ? twoBack + previousChar + currentChar : previousChar + currentChar;
-                console.log
-                if (isNumber(twoBack)) {
-                    partCache += twoBack + previousChar + currentChar;
+                //console.log('Two back: ' + twoBack);
+                //console.log('Two back is num?: ' + isNumber(twoBack));
+
+                if (isNumber(previousChar)) {
+                    if (isNumber(twoBack)) {
+                        partCache += twoBack + previousChar + currentChar;
+                    } else {
+                        partCache += previousChar + currentChar;
+                    }
                 } else {
-                    partCache += previousChar + currentChar
+                    partCache += currentChar;
                 }
-            }*/
+            } else {
+                partCache += currentChar
+            }
             console.log(`PART CACHE AFTER ADDING ${partCache}`);
 
 
-            //If num adjacent to a symbol but cache has stuff in it, tack the number on
-        } else if (partCache && isNumber(currentChar)) {
+            //If there are parts in the cache, and current car is number - add it on to complete the number
+        } else if (isNumber(currentChar) && partCache != '') {
             partCache += currentChar;
-
         } else if (!isNumber(currentChar) && partCache != '') {
             //Push what's currently in the cache into the numbers array - then clear the current cache.
             console.log(`Pushing part cache: ${partCache}`)
             partNumbers.push(partCache);
+            sum += partCache * 1;
             partCache = '';
         }
-
     }
 }
 
 console.log(partNumbers);
-
-let testVar = lines[0];
-/*
-for (let j = 0; j < testVar.length; j++) {
-    console.log(testVar[j])
-}
-*/
+console.log(`Sum: ${sum}`);
+let sum2 = 0;
+partNumbers.forEach((num) => sum2 += num * 1);
+console.log(`Sum 2: ${sum2}`);
 
 
