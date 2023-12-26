@@ -11,22 +11,35 @@ const fs = require('fs');
 const { default: test } = require('node:test');
 const data = fs.readFileSync('i3test.txt', 'utf-8');
 
-const isNumber = (arg) => {
+const numberTest = (arg) => {
     if (!arg) return console.log(`${arg} is not a number and cannot be parsed`);
     return arg.match(/\d/g) ? true : false;
 };
+
+//const isNumber = char => /[0-9]/.test(char);
+
+const symbols = ['*', '%', '$', '@', '&', '+', '/', '#'];
+
+const isSymbol = (arg) => symbols.includes(arg);
+console.log(isSymbol(null));
+
+const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+const isNumber = (arg) => numbers.includes(arg);
 
 const isPeriod = (arg) => {
     if (!arg) return false;
     return arg.match(/\./g) ? true : false;
 };
-const isSymbol = (arg) => {
+
+
+
+const isSymbolOld = (arg) => {
     if (!arg) return false;
     return !isNumber(arg) && !isPeriod(arg) ? true : false;
 };
 
 
-//Symbols are: * % $ @ & + /
+//Symbols are: * % $ @ & + / #
 let lines = data.split('\n');
 
 let partNumbers = [];
