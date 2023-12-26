@@ -9,7 +9,7 @@ What is the sum of all of the part numbers in the engine schematic?
 
 const fs = require('fs');
 const { default: test } = require('node:test');
-const data = fs.readFileSync('i3test.txt', 'utf-8');
+const data = fs.readFileSync('input3.txt', 'utf-8');
 
 const numberTest = (arg) => {
     if (!arg) return console.log(`${arg} is not a number and cannot be parsed`);
@@ -18,7 +18,7 @@ const numberTest = (arg) => {
 
 //const isNumber = char => /[0-9]/.test(char);
 
-const symbols = ['*', '%', '$', '@', '&', '+', '/', '#'];
+const symbols = ['*', '%', '$', '@', '&', '+', '/', '#', '-', '='];
 
 const isSymbol = (arg) => symbols.includes(arg);
 console.log(isSymbol(null));
@@ -61,7 +61,7 @@ for (let line = 0; line < lines.length; line++) {
         let nextDiagLeft = (line === lines.length - 1) ? null : lines[line + 1][i - 1];
         let nextDiagRight = (line === lines.length - 1) ? null : lines[line + 1][i + 1];
 
-        console.log(`Current char line ${line} index ${i}: ${currentChar}. NOT is num cur char? ${!isNumber(currentChar)}`);
+        //console.log(`Current char line ${line} index ${i}: ${currentChar}. NOT is num cur char? ${!isNumber(currentChar)}`);
 
         //console.log(typeof (currentChar));
         //console.log(`Is num cur char? ${isNumber(currentChar)}`);
@@ -73,7 +73,7 @@ for (let line = 0; line < lines.length; line++) {
         //If a char does NOT meet the condition, push the current cache into the numbers list
         if (isNumber(currentChar) && (isSymbol(previousChar) || isSymbol(nextChar) || isSymbol(lastLineChar) || isSymbol(nextLineChar) ||
             isSymbol(lastDiagLeft) || isSymbol(lastDiagRight) || isSymbol(nextDiagLeft) || isSymbol(nextDiagRight))) {
-            console.log(`Adding ${currentChar} from index ${i} to part cache. Is number? ${isNumber(currentChar)}`);
+            //console.log(`Adding ${currentChar} from index ${i} to part cache. Is number? ${isNumber(currentChar)}`);
             //console.log('Previous char is number? ' + isNumber(previousChar));
 
             //If we have no parts in the cache currently, check if there are more digits before to add on (not attached to symbol)
@@ -94,7 +94,7 @@ for (let line = 0; line < lines.length; line++) {
             } else {
                 partCache += currentChar
             }
-            console.log(`PART CACHE AFTER ADDING ${partCache}`);
+            //console.log(`PART CACHE AFTER ADDING ${partCache}`);
 
 
             //If there are parts in the cache, and current car is number - add it on to complete the number
@@ -102,7 +102,7 @@ for (let line = 0; line < lines.length; line++) {
             partCache += currentChar;
         } else if (!isNumber(currentChar) && partCache != '') {
             //Push what's currently in the cache into the numbers array - then clear the current cache.
-            console.log(`Pushing part cache: ${partCache}`)
+            //console.log(`Pushing part cache: ${partCache}`)
             partNumbers.push(partCache);
             sum += partCache * 1;
             partCache = '';
@@ -110,7 +110,7 @@ for (let line = 0; line < lines.length; line++) {
     }
 }
 
-console.log(partNumbers);
+console.log(JSON.stringify(partNumbers));
 console.log(`Sum: ${sum}`);
 let sum2 = 0;
 partNumbers.forEach((num) => sum2 += num * 1);
